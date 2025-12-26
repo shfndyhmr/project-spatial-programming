@@ -464,14 +464,61 @@
             preferCanvas: false
         });
         
-        // Add tile layer
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            minZoom: 0,
-            maxZoom: 19,
-            maxNativeZoom: 19,
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-        
+        /* ===============================
+   BASEMAP LAYERS
+================================ */
+
+// OpenStreetMap
+var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+});
+
+// ESRI World Imagery (Citra Satelit)
+var esriImagery = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    {
+        maxZoom: 19,
+        attribution: 'Tiles © Esri'
+    }
+);
+
+// Carto Light
+var cartoLight = L.tileLayer(
+    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    {
+        maxZoom: 19,
+        attribution: '© CartoDB'
+    }
+);
+
+// Topografi (OpenTopoMap)
+var topo = L.tileLayer(
+    'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    {
+        maxZoom: 17,
+        attribution: '© OpenTopoMap'
+    }
+);
+
+// Default layer
+osm.addTo(map);
+
+/* ===============================
+   LAYER CONTROL
+================================ */
+var baseMaps = {
+    "OpenStreetMap": osm,
+    "Citra Satelit (Esri)": esriImagery,
+    "Carto Light": cartoLight,
+    "Topografi": topo
+};
+
+L.control.layers(baseMaps, null, {
+    position: 'topright',
+    collapsed: true
+}).addTo(map);
+
         // Data destinasi
         var destinations = [
             {name: "Tanah Lot", lat: -8.621200000000002, lng: 115.08680000000001, cluster: 2, rating: 4.6, distance: 355, color: "#10b981"},
