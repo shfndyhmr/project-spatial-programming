@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Peta Clustering Wisata Bali</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+        }
+        
+        #container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 32px;
+            color: #667eea;
+        }
+        
+        .logo-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 2px;
+        }
+        
+        .logo-text p {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 300;
+        }
+        
+        .header-stats {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+            min-width: 100px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        /* Main Content */
+        #main-content {
+            flex: 1;
+            display: flex;
+            padding: 20px;
+            gap: 20px;
+            overflow: hidden;
+        }
+        
+        /* Map Container */
+        #map-wrapper {
+            flex: 1;
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+        }
+        
+        /* Legend */
+        .legend-box {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            z-index: 1000;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            min-width: 280px;
+        }
+        
+        .legend-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-title i {
+            color: #667eea;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .legend-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            flex-shrink: 0;
+        }
+        
+        .legend-text {
+            font-size: 13px;
+            color: #4a5568;
+            font-weight: 400;
+        }
+        
+        /* Info Panel */
+        #info-panel {
+            width: 350px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            overflow-y: auto;
+        }
+        
+        .info-header {
+            margin-bottom: 25px;
+        }
+        
+        .info-header h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .info-header p {
+            font-size: 13px;
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        .cluster-info {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .cluster-info h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .cluster-info h3 i {
+            color: #667eea;
+        }
+        
+        .cluster-detail {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .cluster-detail:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .cluster-detail.c0 { border-left-color: #ef4444; }
+        .cluster-detail.c1 { border-left-color: #3b82f6; }
+        .cluster-detail.c2 { border-left-color: #10b981; }
+        .cluster-detail.c3 { border-left-color: #f59e0b; }
+        
+        .cluster-detail strong {
+            display: block;
+            font-size: 13px;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+        
+        .cluster-detail span {
+            font-size: 12px;
+            color: #718096;
+        }
+        
+        /* Footer */
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 40px;
+            text-align: center;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+        
+        footer p {
+            font-size: 13px;
+            color: #718096;
+        }
+        
+        footer a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        /* Custom Popup */
+        .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .leaflet-popup-content {
+            margin: 15px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .popup-content {
+            min-width: 200px;
+        }
+        
+        .popup-content b {
+            display: block;
+            font-size: 16px;
+            color: #2d3748;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .popup-detail {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+            font-size: 13px;
+            color: #4a5568;
+        }
+        
+        .popup-detail i {
+            color: #667eea;
+            width: 16px;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            #main-content {
+                flex-direction: column;
+            }
+            
+            #info-panel {
+                width: 100%;
+                max-height: 300px;
+            }
+            
+            .header-stats {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <div class="logo-text">
+                        <h1>Peta Clustering Wisata Bali</h1>
+                        <p>Analisis Lokasi Destinasi Berdasarkan Jarak Hotel</p>
+                    </div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">34</span>
+                        <span class="stat-label">Destinasi</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">4</span>
+                        <span class="stat-label">Cluster</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <div id="main-content">
+            <!-- Map -->
+            <div id="map-wrapper">
+                <div id="map"></div>
+                
+                <!-- Legend -->
+                <div class="legend-box">
+                    <div class="legend-title">
+                        <i class="fas fa-layer-group"></i>
+                        Keterangan Cluster
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ef4444;"></div>
+                        <div class="legend-text"><strong>Cluster 0:</strong> Jauh dari hotel</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #3b82f6;"></div>
+                        <div class="legend-text"><strong>Cluster 1:</strong> Dekat hotel</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #10b981;"></div>
+                        <div class="legend-text"><strong>Cluster 2:</strong> Popularitas rendah</div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #f59e0b;"></div>
+                        <div class="legend-text"><strong>Cluster 3:</strong> Sangat populer</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Info Panel -->
+            <div id="info-panel">
+                <div class="info-header">
+                    <h2>Informasi Clustering</h2>
+                    <p>Destinasi wisata Bali dikelompokkan berdasarkan jarak dari hotel terdekat dan tingkat popularitas</p>
+                </div>
+                
+                <div class="cluster-info">
+                    <h3><i class="fas fa-chart-pie"></i> Detail Cluster</h3>
+                    
+                    <div class="cluster-detail c0">
+                        <strong>Cluster 0 - Jauh dari Hotel</strong>
+                        <span>Destinasi dengan jarak > 2km dari hotel terdekat</span>
+                    </div>
+                    
+                    <div class="cluster-detail c1">
+                        <strong>Cluster 1 - Dekat Hotel</strong>
+                        <span>Destinasi dengan jarak < 2km dari hotel terdekat</span>
+                    </div>
+                    
+                    <div class="cluster-detail c2">
+                        <strong>Cluster 2 - Popularitas Rendah</strong>
+                        <span>Rating baik namun popularitas menengah</span>
+                    </div>
+                    
+                    <div class="cluster-detail c3">
+                        <strong>Cluster 3 - Sangat Populer</strong>
+                        <span>Rating tinggi dengan popularitas maksimal</span>
+                    </div>
+                </div>
+                
+                <div class="cluster-info">
+                    <h3><i class="fas fa-info-circle"></i> Cara Penggunaan</h3>
+                    <p style="font-size: 13px; color: #4a5568; line-height: 1.8;">
+                        <strong style="display: block; margin-bottom: 8px;">Klik marker pada peta</strong> 
+                        untuk melihat detail destinasi wisata termasuk nama, cluster, rating, dan jarak ke hotel terdekat.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer>
+            <p>© 2024 Peta Wisata Bali | Data Clustering Analysis | <a href="#"><i class="fas fa-download"></i> Download Data</a></p>
+        </footer>
+    </div>
+    
+    <script>
+        // Initialize map
+        var map = L.map('map', {
+            center: [-8.51294694117647, 115.25476438235295],
+            zoom: 9,
+            zoomControl: true,
+            preferCanvas: false
+        });
+        
+        // Add tile layer
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            minZoom: 0,
+            maxZoom: 19,
+            maxNativeZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Data destinasi
+        var destinations = [
+            {name: "Tanah Lot", lat: -8.621200000000002, lng: 115.08680000000001, cluster: 2, rating: 4.6, distance: 355, color: "#10b981"},
+            {name: "Mount Batur", lat: -8.238889000000006, lng: 115.37750000000001, cluster: 0, rating: 4.5, distance: 2428, color: "#ef4444"},
+            {name: "Uluwatu Temple", lat: -8.829100000000002, lng: 115.0849, cluster: 2, rating: 4.6, distance: 338, color: "#10b981"},
+            {name: "Ubud Monkey Forest", lat: -8.51939999999999, lng: 115.26059999999998, cluster: 2, rating: 4.5, distance: 171, color: "#10b981"},
+            {name: "Goa Gajah", lat: -8.506899999999998, lng: 115.26249999999999, cluster: 1, rating: 4.2, distance: 120, color: "#3b82f6"},
+            {name: "Jatiluwih Rice Terraces in Bali", lat: -8.368638999999995, lng: 115.130472, cluster: 0, rating: 4.7, distance: 3218, color: "#ef4444"},
+            {name: "Tenggalang Rice Terrace", lat: -8.402799999999997, lng: 115.28800000000001, cluster: 2, rating: 4.4, distance: 1147, color: "#10b981"},
+            {name: "Pura Ulun Danu Bratan", lat: -8.275278, lng: 115.16638900000001, cluster: 2, rating: 4.7, distance: 652, color: "#10b981"},
+            {name: "Seminyak Beach", lat: -8.691300000000004, lng: 115.1682, cluster: 1, rating: 4.5, distance: 95, color: "#3b82f6"},
+            {name: "Nusa Dua Beach", lat: -8.794100000000007, lng: 115.23020000000001, cluster: 1, rating: 4.6, distance: 23, color: "#3b82f6"},
+            {name: "Besakih Temple (Pura Besakih)", lat: -8.373899999999999, lng: 115.45220000000002, cluster: 0, rating: 4.5, distance: 4945, color: "#ef4444"},
+            {name: "Kuta Beach", lat: -8.718500000000002, lng: 115.1686, cluster: 2, rating: 4.5, distance: 58, color: "#10b981"},
+            {name: "Pura Penataran Agung Lempuyang", lat: -8.391455999999996, lng: 115.63130600000001, cluster: 0, rating: 4.3, distance: 5199, color: "#ef4444"},
+            {name: "Sidemen Valley", lat: -8.484466999999992, lng: 115.44472799999998, cluster: 1, rating: 4.3, distance: 646, color: "#3b82f6"},
+            {name: "Tirta Empul Temple", lat: -8.414666999999993, lng: 115.315999, cluster: 0, rating: 4.6, distance: 2578, color: "#ef4444"},
+            {name: "West Bali National Park", lat: -8.133333000000006, lng: 114.483333, cluster: 0, rating: 4.5, distance: 3566, color: "#ef4444"},
+            {name: "Garuda Wisnu Kencana Cultural Park", lat: -8.810399999999994, lng: 115.1676, cluster: 2, rating: 4.5, distance: 553, color: "#10b981"},
+            {name: "Bali Zoo", lat: -8.591299999999993, lng: 115.2659, cluster: 1, rating: 4.4, distance: 675, color: "#3b82f6"},
+            {name: "Bali Bird Park", lat: -8.599999999999996, lng: 115.251111, cluster: 0, rating: 4.6, distance: 2133, color: "#ef4444"},
+            {name: "Tirta Gangga", lat: -8.412299999999993, lng: 115.5873, cluster: 1, rating: 4.6, distance: 99, color: "#3b82f6"},
+            {name: "Tegenungan Waterfall", lat: -8.575400000000002, lng: 115.2888, cluster: 1, rating: 4.3, distance: 361, color: "#3b82f6"},
+            {name: "Bali Swing", lat: -8.493583000000005, lng: 115.23922200000001, cluster: 1, rating: 4.5, distance: 213, color: "#3b82f6"},
+            {name: "Waterboom Bali", lat: -8.728600000000007, lng: 115.16940000000001, cluster: 1, rating: 4.7, distance: 96, color: "#3b82f6"},
+            {name: "Campuhan Ridge Walk", lat: -8.503599999999993, lng: 115.25469999999999, cluster: 1, rating: 4.4, distance: 129, color: "#3b82f6"},
+            {name: "Bali Safari and Marine Park", lat: -8.590839999999996, lng: 115.34204, cluster: 1, rating: 4.4, distance: 835, color: "#3b82f6"},
+            {name: "Bajra Sandhi Monument", lat: -8.671700000000001, lng: 115.2339, cluster: 1, rating: 4.6, distance: 234, color: "#3b82f6"},
+            {name: "Sukawati Art Market", lat: -8.596500000000006, lng: 115.2826, cluster: 1, rating: 4.3, distance: 1048, color: "#3b82f6"},
+            {name: "Taman Ujung", lat: -8.463099999999994, lng: 115.6307, cluster: 1, rating: 4.6, distance: 142, color: "#3b82f6"},
+            {name: "Secret Garden Village", lat: -8.372699999999996, lng: 115.19330000000001, cluster: 1, rating: 4.6, distance: 1577, color: "#3b82f6"},
+            {name: "Penglipuran Village", lat: -8.421944000000002, lng: 115.358889, cluster: 0, rating: 4.8, distance: 4794, color: "#ef4444"},
+            {name: "Banjar Hot Spring", lat: -8.210499999999996, lng: 114.9671, cluster: 1, rating: 4.3, distance: 2063, color: "#3b82f6"},
+            {name: "Bali Pulina", lat: -8.422699999999997, lng: 115.27880000000002, cluster: 1, rating: 4.5, distance: 1038, color: "#3b82f6"},
+            {name: "Goa Lawah Temple", lat: -8.551600000000004, lng: 115.4688, cluster: 0, rating: 4.7, distance: 4529, color: "#ef4444"},
+            {name: "Pantai Batu Bolong", lat: -8.659500000000003, lng: 115.1301, cluster: 1, rating: 4.4, distance: 121, color: "#3b82f6"}
+        ];
+        
+        // Add markers
+        destinations.forEach(function(dest) {
+            var marker = L.circleMarker([dest.lat, dest.lng], {
+                radius: 8,
+                fillColor: dest.color,
+                color: dest.color,
+                weight: 3,
+                opacity: 1,
+                fillOpacity: 0.8
+            }).addTo(map);
+            
+            var popupContent = `
+                <div class="popup-content">
+                    <b>${dest.name}</b>
+                    <div class="popup-detail">
+                        <i class="fas fa-layer-group"></i>
+                        <span>Cluster ${dest.cluster}</span>
+                    </div>
+                    <div class="popup-detail">
+                        <i class="fas fa-star"></i>
+                        <span>Rating: ${dest.rating}</span>
+                    </div>
+                    <div class="popup-detail">
+                        <i class="fas fa-hotel"></i>
+                        <span>Jarak hotel: ${dest.distance} m</span>
+                    </div>
+                </div>
+            `;
+            
+            marker.bindPopup(popupContent);
+        });
+    </script>
+</body>
+</html>
