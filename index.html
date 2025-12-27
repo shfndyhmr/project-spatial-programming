@@ -10,7 +10,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
     <style>
         * {
@@ -25,6 +24,137 @@
             overflow: hidden;
         }
         
+        /* Welcome Screen */
+        #welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.85) 0%, rgba(118, 75, 162, 0.85) 100%), 
+                        url('download.jpg') center/cover no-repeat;
+            background-blend-mode: overlay;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        #welcome-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        
+        .welcome-content {
+            text-align: center;
+            color: white;
+            max-width: 700px;
+            padding: 40px;
+            animation: fadeInUp 0.8s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .welcome-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .welcome-content h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .welcome-content p {
+            font-size: 18px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            opacity: 0.95;
+        }
+        
+        .welcome-features {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .feature-item {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            min-width: 180px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.25);
+        }
+        
+        .feature-item i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .feature-item strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .feature-item span {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        .explore-button {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 18px 50px;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            margin-top: 30px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .explore-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+        }
+        
+        .explore-button i {
+            margin-left: 10px;
+        }
+        
         #container {
             display: flex;
             flex-direction: column;
@@ -33,11 +163,25 @@
         
         /* Header */
         header {
-            background: rgba(255, 255, 255, 0.95);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.5) 0%, rgba(118, 75, 162, 0.5) 100%), 
+                        url('download.jpg') center/cover no-repeat;
+            background-blend-mode: overlay;
             backdrop-filter: blur(10px);
             padding: 20px 40px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
             z-index: 1000;
+            position: relative;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.85);
+            z-index: -1;
         }
         
         .header-content {
@@ -184,8 +328,8 @@
         /* Info Panel */
         #info-panel {
             width: 350px;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 25px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.15);
@@ -263,11 +407,11 @@
         
         /* Footer */
         footer {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
             padding: 15px 40px;
             text-align: center;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
         }
         
         footer p {
@@ -349,10 +493,52 @@
             .header-stats {
                 display: none;
             }
+            
+            .welcome-content h1 {
+                font-size: 36px;
+            }
+            
+            .welcome-content p {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Welcome Screen -->
+    <div id="welcome-screen">
+        <div class="welcome-content">
+            <div class="welcome-icon">
+                <i class="fas fa-island-tropical"></i>
+            </div>
+            <h1>Selamat Datang!</h1>
+            <p>Jelajahi keindahan destinasi wisata Bali melalui peta interaktif dengan analisis clustering berdasarkan jarak hotel dan tingkat popularitas.</p>
+            
+            <div class="welcome-features">
+                <div class="feature-item">
+                    <i class="fas fa-map-marked-alt"></i>
+                    <strong>34 Destinasi</strong>
+                    <span>Tempat wisata terbaik</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-layer-group"></i>
+                    <strong>4 Cluster</strong>
+                    <span>Analisis berdasarkan data</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-star"></i>
+                    <strong>Rating Lengkap</strong>
+                    <span>Informasi detail setiap lokasi</span>
+                </div>
+            </div>
+            
+            <button class="explore-button" onclick="startExploring()">
+                Lihat Peta
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    
     <div id="container">
         <!-- Header -->
         <header>
@@ -451,11 +637,16 @@
         
         <!-- Footer -->
         <footer>
-            <p>© 2024 Peta Wisata Bali | Data Clustering Analysis | <a href="#"><i class="fas fa-download"></i> Download Data</a></p>
+            <p>© 2025 Peta Wisata Bali | Data Clustering Analysis | <a href="#"><i class="fas fa-download"></i> Download Data</a></p>
         </footer>
     </div>
     
     <script>
+        // Function to start exploring
+        function startExploring() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+        }
+        
         // Initialize map
         var map = L.map('map', {
             center: [-8.51294694117647, 115.25476438235295],
@@ -464,60 +655,54 @@
             preferCanvas: false
         });
         
-        /* ===============================
-   BASEMAP LAYERS
-================================ */
+        // OpenStreetMap
+        var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        });
 
-// OpenStreetMap
-var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap contributors'
-});
+        // ESRI World Imagery
+        var esriImagery = L.tileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            {
+                maxZoom: 19,
+                attribution: 'Tiles © Esri'
+            }
+        );
 
-// ESRI World Imagery (Citra Satelit)
-var esriImagery = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    {
-        maxZoom: 19,
-        attribution: 'Tiles © Esri'
-    }
-);
+        // Carto Light
+        var cartoLight = L.tileLayer(
+            'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+            {
+                maxZoom: 19,
+                attribution: '© CartoDB'
+            }
+        );
 
-// Carto Light
-var cartoLight = L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    {
-        maxZoom: 19,
-        attribution: '© CartoDB'
-    }
-);
+        // Topografi
+        var topo = L.tileLayer(
+            'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+            {
+                maxZoom: 17,
+                attribution: '© OpenTopoMap'
+            }
+        );
 
-// Topografi (OpenTopoMap)
-var topo = L.tileLayer(
-    'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
-    {
-        maxZoom: 17,
-        attribution: '© OpenTopoMap'
-    }
-);
+        // Default layer
+        osm.addTo(map);
 
-// Default layer
-osm.addTo(map);
+        // Layer control
+        var baseMaps = {
+            "OpenStreetMap": osm,
+            "Citra Satelit (Esri)": esriImagery,
+            "Carto Light": cartoLight,
+            "Topografi": topo
+        };
 
-/* ===============================
-   LAYER CONTROL
-================================ */
-var baseMaps = {
-    "OpenStreetMap": osm,
-    "Citra Satelit (Esri)": esriImagery,
-    "Carto Light": cartoLight,
-    "Topografi": topo
-};
-
-L.control.layers(baseMaps, null, {
-    position: 'topright',
-    collapsed: true
-}).addTo(map);
+        L.control.layers(baseMaps, null, {
+            position: 'topright',
+            collapsed: true
+        }).addTo(map);
 
         // Data destinasi
         var destinations = [
@@ -557,15 +742,58 @@ L.control.layers(baseMaps, null, {
             {name: "Pantai Batu Bolong", lat: -8.659500000000003, lng: 115.1301, cluster: 1, rating: 4.4, distance: 121, color: "#3b82f6"}
         ];
         
+        // Custom icon untuk marker
+        function customIcon(color, cluster) {
+            return L.divIcon({
+                className: 'custom-marker',
+                html: `
+                    <div style="position: relative;">
+                        <div style="
+                            width: 40px;
+                            height: 40px;
+                            background: ${color};
+                            border: 4px solid white;
+                            border-radius: 50% 50% 50% 0;
+                            transform: rotate(-45deg);
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">
+                            <i class="fas fa-map-marker-alt" style="
+                                color: white;
+                                font-size: 18px;
+                                transform: rotate(45deg);
+                            "></i>
+                        </div>
+                        <div style="
+                            position: absolute;
+                            top: -8px;
+                            right: -8px;
+                            background: white;
+                            color: ${color};
+                            border: 2px solid ${color};
+                            border-radius: 50%;
+                            width: 24px;
+                            height: 24px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: bold;
+                            font-size: 12px;
+                            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+                        ">${cluster}</div>
+                    </div>
+                `,
+                iconSize: [40, 40],
+                iconAnchor: [20, 40]
+            });
+        }
+        
         // Add markers
         destinations.forEach(function(dest) {
-            var marker = L.circleMarker([dest.lat, dest.lng], {
-                radius: 8,
-                fillColor: dest.color,
-                color: dest.color,
-                weight: 3,
-                opacity: 1,
-                fillOpacity: 0.8
+            var marker = L.marker([dest.lat, dest.lng], {
+                icon: customIcon(dest.color, dest.cluster)
             }).addTo(map);
             
             var popupContent = `
