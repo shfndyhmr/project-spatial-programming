@@ -20,7 +20,7 @@
         
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
             overflow: hidden;
         }
         
@@ -180,7 +180,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.75);
             z-index: -1;
         }
         
@@ -328,12 +328,13 @@
         /* Info Panel */
         #info-panel {
             width: 350px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
+            background: linear-gradient(135deg, rgba(224, 231, 255, 0.95) 0%, rgba(237, 233, 254, 0.95) 100%);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.15);
             overflow-y: auto;
+            border: 1px solid rgba(102, 126, 234, 0.1);
         }
         
         .info-header {
@@ -407,11 +408,25 @@
         
         /* Footer */
         footer {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.5) 0%, rgba(118, 75, 162, 0.5) 100%), 
+                        url('download.jpg') center/cover no-repeat;
+            background-blend-mode: overlay;
+            backdrop-filter: blur(10px);
             padding: 15px 40px;
             text-align: center;
             box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.75);
+            z-index: -1;
         }
         
         footer p {
@@ -500,6 +515,180 @@
             
             .welcome-content p {
                 font-size: 16px;
+            }
+            
+            .legend-box {
+                bottom: 10px;
+                left: 10px;
+                padding: 15px;
+                min-width: 200px;
+                font-size: 12px;
+            }
+            
+            .legend-title {
+                font-size: 14px;
+            }
+            
+            .legend-text {
+                font-size: 11px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: 15px 20px;
+            }
+            
+            .logo i {
+                font-size: 24px;
+            }
+            
+            .logo-text h1 {
+                font-size: 18px;
+            }
+            
+            .logo-text p {
+                font-size: 10px;
+            }
+            
+            #main-content {
+                padding: 10px;
+                gap: 10px;
+            }
+            
+            #map-wrapper {
+                border-radius: 15px;
+                min-height: 400px;
+            }
+            
+            #info-panel {
+                padding: 20px;
+                border-radius: 15px;
+            }
+            
+            .welcome-content {
+                padding: 20px;
+            }
+            
+            .welcome-icon {
+                font-size: 60px;
+                margin-bottom: 20px;
+            }
+            
+            .welcome-content h1 {
+                font-size: 28px;
+                margin-bottom: 15px;
+            }
+            
+            .welcome-content p {
+                font-size: 14px;
+            }
+            
+            .welcome-features {
+                gap: 15px;
+                margin: 25px 0;
+            }
+            
+            .feature-item {
+                min-width: 140px;
+                padding: 15px;
+            }
+            
+            .feature-item i {
+                font-size: 28px;
+            }
+            
+            .feature-item strong {
+                font-size: 14px;
+            }
+            
+            .feature-item span {
+                font-size: 11px;
+            }
+            
+            .explore-button {
+                padding: 15px 40px;
+                font-size: 16px;
+            }
+            
+            .legend-box {
+                bottom: 60px;
+                left: 50%;
+                transform: translateX(-50%);
+                min-width: auto;
+                max-width: 90%;
+            }
+            
+            footer {
+                padding: 12px 20px;
+            }
+            
+            footer p {
+                font-size: 11px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text h1 {
+                font-size: 16px;
+            }
+            
+            .logo-text p {
+                display: none;
+            }
+            
+            .welcome-content h1 {
+                font-size: 24px;
+            }
+            
+            .welcome-content p {
+                font-size: 13px;
+            }
+            
+            .welcome-features {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .feature-item {
+                width: 100%;
+            }
+            
+            .explore-button {
+                padding: 12px 35px;
+                font-size: 14px;
+            }
+            
+            .info-header h2 {
+                font-size: 18px;
+            }
+            
+            .cluster-info h3 {
+                font-size: 14px;
+            }
+            
+            .legend-box {
+                bottom: 50px;
+                padding: 12px;
+            }
+            
+            .legend-title {
+                font-size: 13px;
+                margin-bottom: 10px;
+            }
+            
+            .legend-item {
+                padding: 8px;
+                margin-bottom: 6px;
+            }
+            
+            .legend-color {
+                width: 16px;
+                height: 16px;
+            }
+            
+            .legend-text {
+                font-size: 10px;
             }
         }
     </style>
@@ -637,7 +826,7 @@
         
         <!-- Footer -->
         <footer>
-            <p>© 2025 Peta Wisata Bali | Data Clustering Analysis | <a href="#"><i class="fas fa-download"></i> Download Data</a></p>
+            <p>© 2024 Peta Wisata Bali | Data Clustering Analysis | <a href="#"><i class="fas fa-download"></i> Download Data</a></p>
         </footer>
     </div>
     
